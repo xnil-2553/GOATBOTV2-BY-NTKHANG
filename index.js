@@ -71,32 +71,35 @@ app.get('/architecture', async (req, res) => {
 
 const os = require('os');
 
-
 function formatUptime(seconds) {
-		const days = Math.floor(seconds / (24 * 60 * 60));
-		seconds %= (24 * 60 * 60);
-		const hours = Math.floor(seconds / (60 * 60));
-		seconds %= (60 * 60);
-		const minutes = Math.floor(seconds / 60);
-		seconds = Math.floor(seconds % 60);
+	const months = Math.floor(seconds / (30 * 24 * 60 * 60)); 
+	seconds %= (30 * 24 * 60 * 60);
+	const days = Math.floor(seconds / (24 * 60 * 60)); 
+	seconds %= (24 * 60 * 60);
+	const hours = Math.floor(seconds / (60 * 60));
+	seconds %= (60 * 60);
+	const minutes = Math.floor(seconds / 60); 
+	seconds = Math.floor(seconds % 60); 
 
-		return `${days}d ${hours}h ${minutes}m ${seconds}s`;
+	return `${months}mth ${days}d ${hours}h ${minutes}m ${seconds}s`; 
 }
 
 app.get('/uptime', (req, res) => {
-		const uptimeData = {
-				botUptime: formatUptime(process.uptime()), 
-				systemUptime: formatUptime(os.uptime()),  
-				os: os.type(),             
-				arch: os.arch(),                     
-				cpu: os.cpus()[0].model,            
-				loadAvg: os.loadavg().map(load => load.toFixed(2)),
-				processMemory: `${(process.memoryUsage().rss / (1024 * 1024)).toFixed(2)} MB`, 
-		};
+	const uptimeData = {
+		botUptime: formatUptime(process.uptime()),
+		systemUptime: formatUptime(os.uptime()),
+		cores: os.cpus().length,
+		os: os.type(),
+		arch: os.arch(),
+		cpu: os.cpus()[0].model,
+		loadAvg: os.loadavg().map(load => load.toFixed(2)),
+		processMemory: `${(process.memoryUsage().rss / (1024 * 1024)).toFixed(2)} MB`,
+	};
 
-		res.json(uptimeData);
+	res.json(uptimeData);
 });
 
-app.listen(port, () => {
-		console.log(`Server is running on http://localhost:${port}`);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+	console.log(`Server is running on port ${PORT}`);
 });
